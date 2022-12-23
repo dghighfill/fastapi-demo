@@ -11,11 +11,3 @@ class Coffee(Base):
     roast = Column(String)
     country_id = Column(Integer, ForeignKey("country.id"))
     country = relationship("Country", back_populates="coffees")
-
-
-class Country(Base):
-    __tablename__ = "country"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    coffees = relationship("Coffee", back_populates="country")
