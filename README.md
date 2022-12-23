@@ -21,4 +21,8 @@ http://127.0.0.1:8000/docs
 
 Fast API CRUD Operations - https://www.youtube.com/watch?v=-ykeT6kk4bk
 
-Fast API with a Database 
+Fast API with a Database - 
+Install SQLite - https://www.youtube.com/watch?v=2CAspm7YwTU
+Adding SQLite to FastAPI https://www.youtube.com/watch?v=34jQRPssM5Q
+
+https://fastapi.tiangolo.com/tutorial/sql-databases/
