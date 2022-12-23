@@ -26,3 +26,5 @@ Install SQLite - https://www.youtube.com/watch?v=2CAspm7YwTU
 Adding SQLite to FastAPI https://www.youtube.com/watch?v=34jQRPssM5Q
 
 https://fastapi.tiangolo.com/tutorial/sql-databases/
+
+Download [sqllitebrowser](https://sqlitebrowser.org/dl/) to view the tables.

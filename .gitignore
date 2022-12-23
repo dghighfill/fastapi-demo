@@ -1,3 +1,4 @@
 .idea/
 out/
 Pipfile.lock
+coffee.db
