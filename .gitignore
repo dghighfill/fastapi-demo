@@ -2,3 +2,4 @@
 out/
 Pipfile.lock
 coffee.db
+__pycache__/
