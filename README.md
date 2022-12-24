@@ -545,8 +545,146 @@ if __name__ == "__main__":
     uvicorn.run("app:app", host="127.0.0.1", reload=True)
 ```
 
+## Exercise 5 Steps
+
+There will be times when you need some supporting tools the help you with your application
+development.  Two tools that will help you with your database are:
+* [Flyway](https://documentation.red-gate.com/fd) -  Allows you to easily create a schema and seed it with lots of test data
+* [DB Browser for SQLite](https://sqlitebrowser.org/) - Provides a UI to explore the tables in your database.
+
+[Flyway](https://documentation.red-gate.com/fd) is an industry leading database versioning framework that aims to unlock DevOps for the database. It strongly favors simplicity and convention over configuration.
+
+For this demo to run, you should run all commands through a **MS DOS Command Window** or **Windows Powershell**
+Previously we had setup Flyway for MySQL in class.  That tutorial is [here](https://github.com/dghighfill/flyway-demo).
+The only difference here is just the configuration and schema has changed for our Coffee application to support
+SQLite.
+
+This exercise will setup Flyway to connect to your pre-existing database and use DB Browser 
+to explore the data.  Flyway will create the database from scratch for you as well.
+
+Flyway is nothing more than a zip file that you can download and unzip to your local filesystem.
+
+* Create a `flyway/` directory at the root of your project and add the following command file.
+Set the FLYWAY_HOME to where you installed flyway
+```
+@REM Run this file from a Windows Command Prompt or Powershell window.
+ECHO OFF
+set FLYWAY_HOME=C:\<SOME_PATH>\Flyway\flyway-9.4.0
+
+@REM This command will allow paramters to be passed such as info or migrate
+%FLYWAY_HOME%/flyway.cmd -configFiles="./conf/flyway.conf" %1 %2 %3 %4
+```
+
+* Create `conf/` directory in the `flyway/` directory and add the `flyway.conf` file below.
+
+
+* Create an `sql/` directory in the `flyway/` directory.  This will contain your flyway
+migration scripts.  Create the following files.
+
+NOTE: that filenames have two underscores after the version.
+
+### V1.1__create_schema.sql
+```roomsql
+CREATE TABLE IF NOT EXISTS country(
+    id INTEGER NOT NULL PRIMARY KEY
+    name VARCHAR(25) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS coffee(
+    id INTEGER NOT NULL PRIMARY KEY
+    name VARCHAR(25) NOT NULL
+    roast VARCHAR(10)
+    country_id INTEGER
+);
+
+ALTER TABLE coffee
+ADD FOREIGN KEY (country_id) REFERENCES country(id);
+```
+
+### V1.1.1__insert_data.sql
+
+```roomsql
+insert into country (id, name) values (1, 'Ethiopia');
+insert into country (id, name) values (2, 'Italy');
+```
+
+* Create/Update the database by running the following command from the `flyway/` directory
+from a Windows Command Prompt.
+
+```shell
+run_flyway.cmd info
+```
+
+Displays the following output
+
+```
+Flyway Community Edition 9.4.0 by Redgate
+
+Database: jdbc:sqlite:../src/coffee.db (SQLite 3.34)
+Schema version: << Empty Schema >>
+
++-----------+---------+------------------+------+--------------+---------+
+| Category  | Version | Description      | Type | Installed On | State   |
++-----------+---------+------------------+------+--------------+---------+
+| Versioned | 1.1     | create schema    | SQL  |              | Pending |
+| Versioned | 1.1.1   | insert countries | SQL  |              | Pending |
+| Versioned | 1.1.2   | insert coffee    | SQL  |              | Pending |
++-----------+---------+------------------+------+--------------+---------+
+``` 
+
+Now if you run `migrate`, it will create the main schema, tables, and insert the data.
+```
+run_flyway.cmd migrate
+```
+
+You will get the following output
+```
+U:\Users\Dale\Development\fastapi-demo\flyway>run_flyway.cmd migrate
+
+Flyway Community Edition 9.4.0 by Redgate
+
+Database: jdbc:sqlite:../src/coffee.db (SQLite 3.34)
+Successfully validated 3 migrations (execution time 00:00.030s)
+Creating Schema History table "main"."flyway_schema_history" ...
+Current version of schema "main": << Empty Schema >>
+Migrating schema "main" to version "1.1 - create schema"
+Migrating schema "main" to version "1.1.1 - insert countries"
+Migrating schema "main" to version "1.1.2 - insert coffee"
+Successfully applied 3 migrations to schema "main", now at version v1.1.2 (execution time 00:00.689s)
+```
+
+If you ever need to start over you can run to delete all rows on the database. 
+
+```
+run_flyway.cmd clean
+```
+
+### DB Browser
+
+You can download [DB Browser for SQLite](https://sqlitebrowser.org/) and view the database
+The screenshots below shows the data after our `flyway migrate`.
+
+#### Countries
+
+![](assets/db_browse_1.png)
+
+#### Coffees 
+
+![](assets/db_browse_2.png)
+
+### Mockaroo
+
+If you'd really like to seed your database with a lot of Test Data, you can use [Mockaroo](https://www.mockaroo.com/)
+to add up to 1000 rows with the free version.  Map the Field names to your Schema and then
+pick the format of SQL.  This will save you a lot of time creating volumes of data for your 
+application.
+
+![](assets/mock.png)
+
 ## References
 * [FastAPI Documentation](https://fastapi.tiangolo.com/)
 * [FastAPI Tutorial](https://www.youtube.com/watch?v=-ykeT6kk4bk)
 * [SQLLite](https://fastapi.tiangolo.com/tutorial/sql-databases/)
+* [DB Browser for SQLite](https://sqlitebrowser.org/)
 * [Flyway](https://documentation.red-gate.com/fd)
+* [Mockaroo](https://www.mockaroo.com/)
