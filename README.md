@@ -199,3 +199,9 @@ def delete_coffee(item_id: int):
         del coffees[item_id]
     return {}
 ```
+
+## References
+* [FastAPI Documentation](https://fastapi.tiangolo.com/)
+* [FastAPI Tutorial](https://www.youtube.com/watch?v=-ykeT6kk4bk)
+* [SQLLite](https://fastapi.tiangolo.com/tutorial/sql-databases/)
+* [Flyway](https://documentation.red-gate.com/fd)
