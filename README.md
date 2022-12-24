@@ -544,3 +544,9 @@ def delete_country(country_id: int = Path(None, description="The ID of the Count
 if __name__ == "__main__":
     uvicorn.run("app:app", host="127.0.0.1", reload=True)
 ```
+
+## References
+* [FastAPI Documentation](https://fastapi.tiangolo.com/)
+* [FastAPI Tutorial](https://www.youtube.com/watch?v=-ykeT6kk4bk)
+* [SQLLite](https://fastapi.tiangolo.com/tutorial/sql-databases/)
+* [Flyway](https://documentation.red-gate.com/fd)
