@@ -9,5 +9,3 @@ CREATE TABLE IF NOT EXISTS coffee(
     roast VARCHAR(10),
     country_id INTEGER
 );
-
---ALTER TABLE coffee ADD FOREIGN KEY (country_id) REFERENCES country(id);
