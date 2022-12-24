@@ -119,9 +119,89 @@ When you `Try it Out` you will see the response in a nicely formatted JSON respo
 
 ![](assets/ex_1_4.png)
 
+## Exercise 3 Steps
+
+Now we're going to layer in some CRUD (Create, Read, Update, and Delete Operations) to 
+our coffee list.  We've previously coded a GET operation, but now we're going to add in
+PUT, POST, and DELETE HTTP Methods.
+
+Each of these will be interacting with the coffees dictionary.
+
+* First lets add a new GET operation to get a single coffee resource.
+
+Add the following imports to app.py
+```python
+from fastapi import FastAPI, Path, HTTPException, status
+from typing import Optional
+```
+
+```python
+@app.get("/coffees/{coffee_id}")
+def get_by_id(coffee_id: int = Path(None, description="The ID of the bean you'd like to retrieve", gt=0)) -> dict:
+    if coffee_id not in coffees:
+        raise HTTPException( status_code=status.HTTP_404_NOT_FOUND, detail="Bean ID does not exists")
+    else:
+        return coffees[coffee_id]
+```
+
+There's a lot going on here.
+
+* We're now taking in a path parameter `coffee_id` on the URL
+* We have a description that will show up in the Swagger tool.  Check it out with `Try it Out`
+* If we don't find something, we raise an HTTPException and set a 404 status code. 
+
+Now lets call write the CRUD operations
+
+* Add the following import so that we can submit a JSON payload.
+
+```python
+from pydantic import BaseModel
+```
+
+* Add the following class to represent our Model.
+
+```python
+class Coffee(BaseModel):
+    name: str
+    roast: str = None  # light, medium, dark
+```
+
+pydantic will do all the magic of marshalling and unmarshalling the JSON string into
+this object.
+
+* Add the following routes to the `app.py`
+
+```python
+@app.post("/coffees")
+def create_coffee(coffee: Coffee):
+    item_id = len(coffees) + 1
+    if item_id in coffees:
+        raise HTTPException( status_code=status.HTTP_400_BAD_REQUEST, detail="Coffee ID already exists")
+    else:
+        coffees[item_id] = coffee
+    return coffees[item_id]
+
+
+@app.put("/coffees/{item_id}")
+def update_coffee(item_id: int, coffee: Coffee):
+    if item_id not in coffees:
+        raise HTTPException( status_code=status.HTTP_404_NOT_FOUND, detail="Coffee ID does not exists")
+    else:
+        coffees[item_id] = coffee
+    return coffees[item_id]
+
+
+@app.delete("/coffees/{item_id}")
+def delete_coffee(item_id: int):
+    if item_id not in coffees:
+        raise HTTPException( status_code=status.HTTP_404_NOT_FOUND, detail="Coffee ID does not exists")
+    else:
+        del coffees[item_id]
+    return {}
+```
+
 ## References
 * [FastAPI Documentation](https://fastapi.tiangolo.com/)
 * [FastAPI Tutorial](https://www.youtube.com/watch?v=-ykeT6kk4bk)
 * [SQLLite](https://fastapi.tiangolo.com/tutorial/sql-databases/)
 * [Flyway](https://documentation.red-gate.com/fd)
-
