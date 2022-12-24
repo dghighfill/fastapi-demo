@@ -34,22 +34,40 @@ $ pipenv install fastapi uvicorn
 
 ## Exercise Steps
 
-1. Create a git repository on GitHub for `fastapi-demo`
-2. Clone the repository to your local machine and `cd` into your repository directory.
-3. Create a `dev` branch.
+* Install Prerequisites
+* Create a git repository on GitHub for `fastapi-demo`
+* Clone the repository to your local machine and `cd` into your repository directory.
+* Create a `dev` branch.
 ```shell
 $ git checkout -b dev
 ```
-4. Create an `src/` directory
-5. Create a file `app.py`.
-6. Add the following imports
+* Create an `src/` directory
+* Create a file `app.py`.
+* Add the following imports
 ```python 
-from fastapi 
+from fastapi import FastAPI
 import uvicorn
+
+app = FastAPI()
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="127.0.0.1", reload=True)
 ```
-7. Test your setup
+* Test your setup - from a terminal window run the following from the `/src` directory.
+
+```shell
+$python app.py
+
+You should see something like this.
+
+```
+$ python app.py
+Will watch for changes in these directories: ['U:\\Users\\Dale\\Development\\fastapi-demo\\src']
+Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)    
+Started reloader process using StatReload
+Started server process
+Waiting for application startup.
+Application startup complete. 
+```
 
 
