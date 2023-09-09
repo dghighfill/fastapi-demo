@@ -137,7 +137,7 @@ from typing import Optional
 
 ```python
 @app.get("/coffees/{coffee_id}")
-def get_by_id(coffee_id: int = Path(None, description="The ID of the bean you'd like to retrieve", gt=0)) -> dict:
+def get_by_id(coffee_id: int = Path(description="The ID of the bean you'd like to retrieve", gt=0)) -> dict:
     if coffee_id not in coffees:
         raise HTTPException( status_code=status.HTTP_404_NOT_FOUND, detail="Bean ID does not exists")
     else:
@@ -202,11 +202,20 @@ def delete_coffee(item_id: int):
 
 ## Exercise 4 Steps
 
-Updating an array isn't much fun because we loose our data between server restarts.  We're now going to attached our
-API to a SQLite Database.  
+Updating an array isn't much fun because we loose our data between server restarts.  We're now going to attached our API to a SQLite Database.  
 
+## Prerequisites
+
+### Install sqlalchemy
+
+From your pipenv shell, install the following 
+```shell
+$ pipenv install sqlalchemy
+```
 This exercise takes a bit to configure so just follow along and you'll have a fully functional API connected to a database
 with two tables that define the relationships between the to.
+
+### database.py
 
 * Created a new `database.py` file in the `src/` directory with the following contents.
 ```python
@@ -227,7 +236,7 @@ Base = declarative_base()
 Coffees are from Countries so we're going to need to define a few schema files that represent the Coffee and Country 
 schemas
 
-* Create a `schemas/` directory and add the following two files.
+* Create a `schemas/` directory within the `src` directory and add the following two files.
 
 ### coffee.py
 
@@ -263,7 +272,7 @@ class Country(Base):
     coffees = relationship("Coffee", back_populates="country")
 ```
 
-* Create a `models/` directory and add the following two files.
+* Create a `models/` directory within the `src` directory and add the following two files.
 
 ### coffee.py
 
@@ -281,7 +290,7 @@ class Coffee(CoffeeCreate):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 ```
 
 ### country.py
@@ -298,7 +307,7 @@ class Country(CountryCreate):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 ```
 
 * We want to keep our database operations more in an isolated class and not in the main app.py file.  This is for ease 
@@ -323,13 +332,13 @@ from typing import Dict
 
 class DatabaseController:
 
-    def get_coffees(self, db: Session) -> Dict:
+    def get_coffees(self, db: Session):
         return db.query(CoffeeSchema).all()
 
     def get_coffee_by_name(self, name: str, db: Session):
         return db.query(CoffeeSchema).filter(CoffeeSchema.name == name).first()
 
-    def get_coffee_by_id(self, item_id: int, db: Session) -> dict:
+    def get_coffee_by_id(self, item_id: int, db: Session):
         return db.query(CoffeeSchema).filter(CoffeeSchema.id == item_id).first()
 
     def create_coffee(self, coffee: CoffeeCreateModel, db: Session):
@@ -368,14 +377,14 @@ class DatabaseController:
             raise Exception( "Coffee does not exists to delete")
         return {}
 
-    def get_countries(self, db: Session) -> Dict:
+    def get_countries(self, db: Session):
         return db.query(CountrySchema).all()
 
-    def get_beans_for_country(self, country_id: int, db: Session) -> Dict:
+    def get_beans_for_country(self, country_id: int, db: Session):
         country = db.query(CountrySchema).filter(CountrySchema.id == country_id).first()
         return country.coffees
 
-    def get_country_by_id(self, country_id: int, db: Session) -> dict:
+    def get_country_by_id(self, country_id: int, db: Session):
         return db.query(CountrySchema).filter(CountrySchema.id == country_id).first()
 
     def create_country(self, country: CountryCreateModel, db: Session):
@@ -395,7 +404,7 @@ class DatabaseController:
 
         return response
 
-    def delete_country(self, country_id: int, db: Session) -> dict:
+    def delete_country(self, country_id: int, db: Session):
         response = {}
         country = db.query(CountrySchema).filter(CountrySchema.id == country_id).first()
         if country is not None:
@@ -440,7 +449,7 @@ def get_db():
 
 
 @app.get("/coffees")
-def get_coffees(db: Session = Depends(get_db)) -> Dict:
+def get_coffees(db: Session = Depends(get_db)):
     return controller.get_coffees(db)
 
 
@@ -455,8 +464,8 @@ def get_coffee_by_name(name: Optional[str] = None, db: Session = Depends(get_db)
 
 
 @app.get("/coffees/{item_id}")
-def get_coffee_by_id(item_id: int = Path(None, description="The ID of the bean you'd like to retrieve", gt=0)
-                     , db: Session = Depends(get_db)) -> dict:
+def get_coffee_by_id(item_id: int = Path(description="The ID of the bean you'd like to retrieve", gt=0)
+                     , db: Session = Depends(get_db)):
     coffee = controller.get_coffee_by_id(item_id, db)
     if coffee is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Coffee does not exists")
@@ -494,19 +503,19 @@ def delete_coffee(coffee_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/countries")
-def get_countries(db: Session = Depends(get_db)) -> Dict:
+def get_countries(db: Session = Depends(get_db)):
     return controller.get_countries(db)
 
 
 @app.get("/countries/{country_id}/coffees")
-def get_coffees_for_country(country_id: int, db: Session = Depends(get_db)) -> Dict:
+def get_coffees_for_country(country_id: int, db: Session = Depends(get_db)):
     country = controller.get_country_by_id(country_id, db)
     return country.coffees
 
 
 @app.get("/countries/{country_id}")
-def get_country_by_id(country_id: int = Path(None, description="The ID of the Country you'd like to retrieve", gt=0)
-                      , db: Session = Depends(get_db)) -> dict:
+def get_country_by_id(country_id: int = Path(description="The ID of the Country you'd like to retrieve", gt=0)
+                      , db: Session = Depends(get_db)):
     country = controller.get_country_by_id(country_id, db)
 
     if country is None:
@@ -533,8 +542,8 @@ def update_country(country: CountryModel, db: Session = Depends(get_db)):
 
 
 @app.delete("/countries/{country_id}")
-def delete_country(country_id: int = Path(None, description="The ID of the Country you'd like to delete", gt=0)
-                   , db: Session = Depends(get_db)) -> dict:
+def delete_country(country_id: int = Path(description="The ID of the Country you'd like to delete", gt=0)
+                   , db: Session = Depends(get_db)):
     country = controller.delete_country(country_id, db)
     if country is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country does not exists")
@@ -566,6 +575,8 @@ Flyway is nothing more than a zip file that you can download and unzip to your l
 
 * Create a `flyway/` directory at the root of your project and add the following command file.
 Set the FLYWAY_HOME to where you installed flyway
+
+### run_flyway.cmd 
 ```
 @REM Run this file from a Windows Command Prompt or Powershell window.
 ECHO OFF
@@ -586,19 +597,17 @@ NOTE: that filenames have two underscores after the version.
 ### V1.1__create_schema.sql
 ```roomsql
 CREATE TABLE IF NOT EXISTS country(
-    id INTEGER NOT NULL PRIMARY KEY
+    id INTEGER NOT NULL PRIMARY KEY,
     name VARCHAR(25) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS coffee(
-    id INTEGER NOT NULL PRIMARY KEY
-    name VARCHAR(25) NOT NULL
-    roast VARCHAR(10)
-    country_id INTEGER
+    id INTEGER NOT NULL PRIMARY KEY,
+    name VARCHAR(25) NOT NULL,
+    roast VARCHAR(10),
+    country_id INTEGER,
+    FOREIGN KEY (country_id) REFERENCES country(id)
 );
-
-ALTER TABLE coffee
-ADD FOREIGN KEY (country_id) REFERENCES country(id);
 ```
 
 ### V1.1.1__insert_data.sql
@@ -628,7 +637,6 @@ Schema version: << Empty Schema >>
 +-----------+---------+------------------+------+--------------+---------+
 | Versioned | 1.1     | create schema    | SQL  |              | Pending |
 | Versioned | 1.1.1   | insert countries | SQL  |              | Pending |
-| Versioned | 1.1.2   | insert coffee    | SQL  |              | Pending |
 +-----------+---------+------------------+------+--------------+---------+
 ``` 
 
