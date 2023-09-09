@@ -137,7 +137,7 @@ from typing import Optional
 
 ```python
 @app.get("/coffees/{coffee_id}")
-def get_by_id(coffee_id: int = Path(None, description="The ID of the bean you'd like to retrieve", gt=0)) -> dict:
+def get_by_id(coffee_id: int = Path(description="The ID of the bean you'd like to retrieve", gt=0)) -> dict:
     if coffee_id not in coffees:
         raise HTTPException( status_code=status.HTTP_404_NOT_FOUND, detail="Bean ID does not exists")
     else:
@@ -202,11 +202,20 @@ def delete_coffee(item_id: int):
 
 ## Exercise 4 Steps
 
-Updating an array isn't much fun because we loose our data between server restarts.  We're now going to attached our
-API to a SQLite Database.  
+Updating an array isn't much fun because we loose our data between server restarts.  We're now going to attached our API to a SQLite Database.  
 
+## Prerequisites
+
+### Install sqlalchemy
+
+From your pipenv shell, install the following 
+```shell
+$ pipenv install sqlalchemy
+```
 This exercise takes a bit to configure so just follow along and you'll have a fully functional API connected to a database
 with two tables that define the relationships between the to.
+
+### database.py
 
 * Created a new `database.py` file in the `src/` directory with the following contents.
 ```python
@@ -227,7 +236,7 @@ Base = declarative_base()
 Coffees are from Countries so we're going to need to define a few schema files that represent the Coffee and Country 
 schemas
 
-* Create a `schemas/` directory and add the following two files.
+* Create a `schemas/` directory within the `src` directory and add the following two files.
 
 ### coffee.py
 
@@ -263,7 +272,7 @@ class Country(Base):
     coffees = relationship("Coffee", back_populates="country")
 ```
 
-* Create a `models/` directory and add the following two files.
+* Create a `models/` directory within the `src` directory and add the following two files.
 
 ### coffee.py
 
@@ -281,7 +290,7 @@ class Coffee(CoffeeCreate):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 ```
 
 ### country.py
@@ -298,7 +307,7 @@ class Country(CountryCreate):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 ```
 
 * We want to keep our database operations more in an isolated class and not in the main app.py file.  This is for ease 
@@ -455,7 +464,7 @@ def get_coffee_by_name(name: Optional[str] = None, db: Session = Depends(get_db)
 
 
 @app.get("/coffees/{item_id}")
-def get_coffee_by_id(item_id: int = Path(None, description="The ID of the bean you'd like to retrieve", gt=0)
+def get_coffee_by_id(item_id: int = Path(description="The ID of the bean you'd like to retrieve", gt=0)
                      , db: Session = Depends(get_db)) -> dict:
     coffee = controller.get_coffee_by_id(item_id, db)
     if coffee is None:
@@ -505,7 +514,7 @@ def get_coffees_for_country(country_id: int, db: Session = Depends(get_db)) -> D
 
 
 @app.get("/countries/{country_id}")
-def get_country_by_id(country_id: int = Path(None, description="The ID of the Country you'd like to retrieve", gt=0)
+def get_country_by_id(country_id: int = Path(description="The ID of the Country you'd like to retrieve", gt=0)
                       , db: Session = Depends(get_db)) -> dict:
     country = controller.get_country_by_id(country_id, db)
 
@@ -533,7 +542,7 @@ def update_country(country: CountryModel, db: Session = Depends(get_db)):
 
 
 @app.delete("/countries/{country_id}")
-def delete_country(country_id: int = Path(None, description="The ID of the Country you'd like to delete", gt=0)
+def delete_country(country_id: int = Path(description="The ID of the Country you'd like to delete", gt=0)
                    , db: Session = Depends(get_db)) -> dict:
     country = controller.delete_country(country_id, db)
     if country is None:
