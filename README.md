@@ -575,6 +575,8 @@ Flyway is nothing more than a zip file that you can download and unzip to your l
 
 * Create a `flyway/` directory at the root of your project and add the following command file.
 Set the FLYWAY_HOME to where you installed flyway
+
+### run_flyway.cmd 
 ```
 @REM Run this file from a Windows Command Prompt or Powershell window.
 ECHO OFF
@@ -595,19 +597,17 @@ NOTE: that filenames have two underscores after the version.
 ### V1.1__create_schema.sql
 ```roomsql
 CREATE TABLE IF NOT EXISTS country(
-    id INTEGER NOT NULL PRIMARY KEY
+    id INTEGER NOT NULL PRIMARY KEY,
     name VARCHAR(25) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS coffee(
-    id INTEGER NOT NULL PRIMARY KEY
-    name VARCHAR(25) NOT NULL
-    roast VARCHAR(10)
-    country_id INTEGER
+    id INTEGER NOT NULL PRIMARY KEY,
+    name VARCHAR(25) NOT NULL,
+    roast VARCHAR(10),
+    country_id INTEGER,
+    FOREIGN KEY (country_id) REFERENCES country(id)
 );
-
-ALTER TABLE coffee
-ADD FOREIGN KEY (country_id) REFERENCES country(id);
 ```
 
 ### V1.1.1__insert_data.sql
@@ -637,7 +637,6 @@ Schema version: << Empty Schema >>
 +-----------+---------+------------------+------+--------------+---------+
 | Versioned | 1.1     | create schema    | SQL  |              | Pending |
 | Versioned | 1.1.1   | insert countries | SQL  |              | Pending |
-| Versioned | 1.1.2   | insert coffee    | SQL  |              | Pending |
 +-----------+---------+------------------+------+--------------+---------+
 ``` 
 
