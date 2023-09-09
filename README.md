@@ -1,5 +1,14 @@
 # fastapi-demo
 
+## Table of contents
+
+* [Prerequisites](#prerequisites)
+* [Exercise 1](#exercise-1-steps)
+* [Exercise 2](#exercise-2-steps)
+* [Exercise 3](#exercise-3-steps)
+* [Exercise 4](#exercise-4-steps)
+* [Exercise 5](#exercise-5-steps)
+
 ## Prerequisites
 
 ### Install pipenv
