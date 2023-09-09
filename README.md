@@ -588,6 +588,14 @@ set FLYWAY_HOME=C:\<SOME_PATH>\Flyway\flyway-9.4.0
 
 * Create `conf/` directory in the `flyway/` directory and add the `flyway.conf` file below.
 
+```
+flyway.url=jdbc:sqlite:../src/coffee.db
+flyway.user=flyway
+flyway.password=password
+flyway.cleanDisabled=false
+flyway.locations=filesystem:sql
+flyway.baselineOnMigrate=true
+```
 
 * Create an `sql/` directory in the `flyway/` directory.  This will contain your flyway
 migration scripts.  Create the following files.
