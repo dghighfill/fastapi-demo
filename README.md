@@ -338,7 +338,7 @@ class DatabaseController:
     def get_coffee_by_name(self, name: str, db: Session):
         return db.query(CoffeeSchema).filter(CoffeeSchema.name == name).first()
 
-    def get_coffee_by_id(self, item_id: int, db: Session) -> dict:
+    def get_coffee_by_id(self, item_id: int, db: Session):
         return db.query(CoffeeSchema).filter(CoffeeSchema.id == item_id).first()
 
     def create_coffee(self, coffee: CoffeeCreateModel, db: Session):
@@ -380,11 +380,11 @@ class DatabaseController:
     def get_countries(self, db: Session):
         return db.query(CountrySchema).all()
 
-    def get_beans_for_country(self, country_id: int, db: Session) -> Dict:
+    def get_beans_for_country(self, country_id: int, db: Session):
         country = db.query(CountrySchema).filter(CountrySchema.id == country_id).first()
         return country.coffees
 
-    def get_country_by_id(self, country_id: int, db: Session) -> dict:
+    def get_country_by_id(self, country_id: int, db: Session):
         return db.query(CountrySchema).filter(CountrySchema.id == country_id).first()
 
     def create_country(self, country: CountryCreateModel, db: Session):
@@ -404,7 +404,7 @@ class DatabaseController:
 
         return response
 
-    def delete_country(self, country_id: int, db: Session) -> dict:
+    def delete_country(self, country_id: int, db: Session):
         response = {}
         country = db.query(CountrySchema).filter(CountrySchema.id == country_id).first()
         if country is not None:
