@@ -44,7 +44,7 @@ def get_coffee_by_name(name: Optional[str] = None, db: Session = Depends(get_db)
 
 @app.get("/coffees/{item_id}")
 def get_coffee_by_id(item_id: int = Path(description="The ID of the coffee you'd like to retrieve", gt=0)
-                     , db: Session = Depends(get_db)) -> dict:
+                     , db: Session = Depends(get_db)):
     coffee = controller.get_coffee_by_id(item_id, db)
     if coffee is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Coffee does not exists")
