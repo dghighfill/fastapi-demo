@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Path, HTTPException, status, Depends
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from typing import Optional
 
@@ -13,7 +14,18 @@ from sqlalchemy.orm import Session
 from controller.database_controller import DatabaseController
 from typing import Dict
 
+
 app = FastAPI()
+origins = [
+    "http://localhost:8080"
+]
+app.add_middleware(CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
 controller = DatabaseController()
 
 Base.metadata.create_all(bind=engine)
