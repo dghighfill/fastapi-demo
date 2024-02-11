@@ -592,18 +592,21 @@ ECHO OFF
 set FLYWAY_HOME=C:\<SOME_PATH>\Flyway\flyway-9.4.0
 
 @REM This command will allow paramters to be passed such as info or migrate
-%FLYWAY_HOME%/flyway.cmd -configFiles="./conf/flyway.conf" %1 %2 %3 %4
+%FLYWAY_HOME%/flyway.cmd -configFiles="./conf/flyway.toml" %1 %2 %3 %4
 ```
 
-* Create `conf/` directory in the `flyway/` directory and add the `flyway.conf` file below.
+* Create `conf/` directory in the `flyway/` directory and add the `flyway.toml` file below.
 
 ```
-flyway.url=jdbc:sqlite:../src/coffee.db
-flyway.user=flyway
-flyway.password=password
-flyway.cleanDisabled=false
-flyway.locations=filesystem:sql
-flyway.baselineOnMigrate=true
+[environments.default]
+url = "jdbc:sqlite:../src/coffee.db"
+user = "flyway"
+password = "password"
+
+[flyway]
+environment = "default"
+locations=["filesystem:sql"]
+cleanDisabled = false
 ```
 
 * Create an `sql/` directory in the `flyway/` directory.  This will contain your flyway
@@ -611,7 +614,7 @@ migration scripts.  Create the following files.
 
 NOTE: that filenames have two underscores after the version.
 
-### V1.1__create_schema.sql
+### V1.1.0__create_schema.sql
 ```roomsql
 CREATE TABLE IF NOT EXISTS country(
     id INTEGER NOT NULL PRIMARY KEY,
