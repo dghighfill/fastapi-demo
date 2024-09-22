@@ -213,15 +213,23 @@ def delete_coffee(item_id: int):
 
 ## Exercise 4 Steps
 
-Updating an array isn't much fun because we loose our data between server restarts.  We're now going to attached our API to a SQLite Database.  
+Updating an array isn't much fun because we lose our data between server restarts.  We're now going to 
+attach our API to a SQLite Database.  
 
 ## Prerequisites
 
 ### Install sqlalchemy
 
-From your pipenv shell, install the following 
+Add the following to your requirements.txt
+
+```
+sqlalchemy
+```
+
+Now install this new requirement.
+
 ```shell
-$ pipenv install sqlalchemy
+$ pip install -r requirements.txt
 ```
 This exercise takes a bit to configure so just follow along and you'll have a fully functional API connected to a database
 with two tables that define the relationships between the to.
