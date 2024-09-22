@@ -4,9 +4,10 @@ cd flyway
 cd -
 
 # Start the HTTP Server
-start pipenv run python -m http.server -d ./ui/ 8080
+source .venv/Scripts/activate
+start python -m http.server -d ./ui/ 8080
 
 ### Start API Server
 export SQLALCHEMY_DATABASE_URL="sqlite:///./coffee.db"
-start pipenv run python src/app.py
+start python src/app.py
 
