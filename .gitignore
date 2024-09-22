@@ -1,2 +1,6 @@
 .venv/
 .idea/
+out/
+**/__pycache__
+coffee.db
+Pipfile.lock
