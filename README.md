@@ -11,34 +11,29 @@
 
 ## Prerequisites
 
-### Install pipenv
+### Setup Your Virtual Environment
 
-Pipenv is a tool that aims to bring the best of all packaging worlds to the Python world. 
+There are many (too many) package managers for python and while we could explore some of the new ones, we're 
+going to keep it simple by using the venv module to create the virtual environment and requirements.txt to
+store the application dependencies.
 
-It automatically creates and manages a virtualenv for your projects, as well as adds/removes packages from your Pipfile as you install/uninstall packages. It also generates the ever-important Pipfile.lock, which is used to produce deterministic builds.
-
-Pipenv is primarily meant to provide users and developers of applications with an easy method to setup a working environment. For the distinction between libraries and applications and the usage of setup.py vs Pipfile to define dependencies, see ☤ Pipfile vs setup.py.
+First create your virtual environment.
 
 ```shell
-$ pip install --user pipenv
+$ python -m venv .venv
 ```
 
-On Windows you can find the user base binary directory by running `python -m site --user-site` and replacing site-packages with Scripts. 
-
-If you install to your user home (i.e. --user), you might have to add PATH=~/AppData/Roaming/Python/Python39/Scripts:$PATH to your .bash_profile to add pipenv to your path.
+Now activate the environment.  Note some IDEs will do this for you.
 
 ```shell
-$ cat ~/.bash_profile 
-#!/bin/bash
-PATH=~/AppData/Roaming/Python/Python39/Scripts:$PATH
+$ source .venv/Scripts/activate
 ```
 
-### Intstall FastAPI Dependencies
-
-With pipenv setup, from a terminal window run the following command
+NOTE: If git commands or python is not found on your path you may also 
+need to source your `.bash_profile` if you setup your system path here. 
 
 ```shell
-$ pipenv install fastapi uvicorn
+$ source ~/.bash_profile
 ```
 
 ## Exercise 1 Steps
@@ -50,6 +45,22 @@ $ pipenv install fastapi uvicorn
 ```shell
 $ git checkout -b dev
 ```
+### Install FastAPI Dependencies
+
+Create a requirements.txt file in the root of the project.
+
+requirements.txt
+```
+fastapi
+uvicorn
+```
+
+Now install these requirements with the following command.
+```shell
+$ pip install -r requirements.txt
+```
+
+
 * Create an `src/` directory
 * Create a file `app.py`.
 * Add the following imports
@@ -65,7 +76,7 @@ if __name__ == "__main__":
 * Test your setup - from a terminal window run the following from the `/src` directory.
 
 ```shell
-$python app.py
+$ python app.py
 ```
 
 You should see something like this.
@@ -101,7 +112,7 @@ coffees = {
 
 ```python
 @app.get("/coffees")
-def get_coffees() -> dict:
+def get_coffees():
     return coffees
 ```
 
@@ -146,7 +157,7 @@ from typing import Optional
 
 ```python
 @app.get("/coffees/{coffee_id}")
-def get_by_id(coffee_id: int = Path(description="The ID of the bean you'd like to retrieve", gt=0)) -> dict:
+def get_by_id(coffee_id: int = Path(description="The ID of the bean you'd like to retrieve", gt=0)):
     if coffee_id not in coffees:
         raise HTTPException( status_code=status.HTTP_404_NOT_FOUND, detail="Bean ID does not exists")
     else:
@@ -211,15 +222,23 @@ def delete_coffee(item_id: int):
 
 ## Exercise 4 Steps
 
-Updating an array isn't much fun because we loose our data between server restarts.  We're now going to attached our API to a SQLite Database.  
+Updating an array isn't much fun because we lose our data between server restarts.  We're now going to 
+attach our API to a SQLite Database.  
 
 ## Prerequisites
 
 ### Install sqlalchemy
 
-From your pipenv shell, install the following 
+Add the following to your requirements.txt
+
+```
+sqlalchemy
+```
+
+Now install this new requirement.
+
 ```shell
-$ pipenv install sqlalchemy
+$ pip install -r requirements.txt
 ```
 This exercise takes a bit to configure so just follow along and you'll have a fully functional API connected to a database
 with two tables that define the relationships between the to.
@@ -592,18 +611,21 @@ ECHO OFF
 set FLYWAY_HOME=C:\<SOME_PATH>\Flyway\flyway-9.4.0
 
 @REM This command will allow paramters to be passed such as info or migrate
-%FLYWAY_HOME%/flyway.cmd -configFiles="./conf/flyway.conf" %1 %2 %3 %4
+%FLYWAY_HOME%/flyway.cmd -configFiles="./conf/flyway.toml" %1 %2 %3 %4
 ```
 
-* Create `conf/` directory in the `flyway/` directory and add the `flyway.conf` file below.
+* Create `conf/` directory in the `flyway/` directory and add the `flyway.toml` file below.
 
 ```
-flyway.url=jdbc:sqlite:../src/coffee.db
-flyway.user=flyway
-flyway.password=password
-flyway.cleanDisabled=false
-flyway.locations=filesystem:sql
-flyway.baselineOnMigrate=true
+[environments.default]
+url = "jdbc:sqlite:../src/coffee.db"
+user = "flyway"
+password = "password"
+
+[flyway]
+environment = "default"
+locations=["filesystem:sql"]
+cleanDisabled = false
 ```
 
 * Create an `sql/` directory in the `flyway/` directory.  This will contain your flyway
@@ -611,7 +633,7 @@ migration scripts.  Create the following files.
 
 NOTE: that filenames have two underscores after the version.
 
-### V1.1__create_schema.sql
+### V1.1.0__create_schema.sql
 ```roomsql
 CREATE TABLE IF NOT EXISTS country(
     id INTEGER NOT NULL PRIMARY KEY,
