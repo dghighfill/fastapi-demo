@@ -633,7 +633,7 @@ migration scripts.  Create the following files.
 
 NOTE: that filenames have two underscores after the version.
 
-### V1.1__create_schema.sql
+### V1.1.0__create_schema.sql
 ```roomsql
 CREATE TABLE IF NOT EXISTS country(
     id INTEGER NOT NULL PRIMARY KEY,
