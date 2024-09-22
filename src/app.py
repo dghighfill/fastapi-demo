@@ -27,7 +27,7 @@ def get_coffees() -> dict:
 
 
 @app.get("/coffees/{coffee_id}")
-def get_by_id(coffee_id: int = Path(description="The ID of the coffee you'd like to retrieve", gt=0)) -> dict:
+def get_by_id(coffee_id: int = Path(description="The ID of the coffee you'd like to retrieve", gt=0)):
     if coffee_id not in coffees:
         raise HTTPException( status_code=status.HTTP_404_NOT_FOUND, detail="Coffee ID does not exists")
     else:
